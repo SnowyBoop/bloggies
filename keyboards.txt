@@ -1,0 +1,204 @@
+Having built well over 25 Ergo / Split keyboards so far, i must say that the resources 
+on doing so are often very outdated and sometimes plain overcomplicated.
+
+So with this blog entry i will try my best to summarize a years long journey on designing,
+building and configuring software for split or non split boards without the BS :)
+
+I suppose you came here to learn how to build yourself a new keyboard. Depending on
+how much you already know, here are some shortcuts to skip parts that might be irrellevant.
+
+You already know / dont care how the electronics work -> Skip to section 2
+
+You already read all the electronic basics, and only want design help -> Skip to section 3
+
+You are only interested in understanding QMK -> Skip to section 6
+
+----
+Section 1:
+How do the electronics in the boards actually work?
+
+Section 2:
+Which parts are needed for a custom keyboard, and where to source them
+
+Section 3:
+Designing a ergonomic keyboard, for your own hands made easy
+
+Section 4: 
+CAD design for a housing or a pcb made from an ergonomic svg
++ 3d printing tips / pcb creation tips
+
+Section 5:
+Hand wiring the board
+
+Section 6:
+QMK configuration from scratch
++ understanding the workings of QMK
+
+Section 7:
+Flashing your brand new board!
+----
+
+
+
+SECTION 1:
+
+Let's talk theory. How does a dumb arduino know which of your 40-80 keys you press on your keyboard? You only have like 12 pins on your arduino to read those keys...
+
+Its all due to the magic of multiplexing!
+
+Instead of connecting every single button with a pulldown resistor to the aruino individually (which you could do for lets say a macro pad with 5 keys), we wire all our keys in a matrix.
+
+{multiplex image}
+
+In the above wiring diagram i have left out everything apart from the switches, diodes and wires. These 3 components do pretty much all the magic.
+As you can see in the above matrix, all the rows and all the columns of the keyboard are wired together in a line. What this allows, is for the arduino to "probe" every single key, one after another.
+To understand how this works. Imagine the arduino sends some voltage into the wire A1, and then listens on all of the B wires, if theres voltage. This will ofcoarse only be the case, if a switch is pressed on the B row. This closing of the circuit is detected
+by the arduino, and can be handeled by the code running (in our case QMK).
+
+{image-1-key-matrix}
+
+This scanning is called matrix scanning, and is repeated over and over. Looping over all the columns, and listening for circuits closing on the rows. 
+
+Now why are there diodes in the circuit then? Shouldnt this just work.
+
+Thats a valid question! Diodes arent actually needed. Until you want to press more than one key at a time ;D
+
+To get the so called n-key rollover, we need the diodes to prevent voltage from going, where we dont want it.
+If we use the same matrix from above, lets now press 3 keys at the same time (insane).
+
+{image-3-key-matrix}
+
+As you can see above, something interesting happens. 
+When we press 3 keys in an L shape, the voltage shorts out, from one row to another. This looks to our arduino as if 4 keys are pressed. Since voltage ofcourse doesnt just move in one direction when theres an intersection :P
+To prevent this voltage movement in the wrong direction, we can use diodes to shape the voltage path.
+By placing diodes (usually 1N418 diodes that fire fast) from the rows to column direction, we prevent the voltage from leaking into another row, that isnt currently being scanned, and there we go! Our arduino can scan an INFINITE number of keys being pressed
+at the same time (We did it!!)
+
+SECTION 2:
+Now that we know the scanning theory, there is very little further electronic knowledge that is required to understand the inner workings of the Keyboard. 
+We can now look at a wiring diagram that has ALL components.
+
+{image-full-KB-half}
+
+As you can see, there is very little difference to our KB matrix. This is simply because there arent many more components. Basically everything is handeled by the Arduino.
+Talking arduino... 
+Which arduino works for a keyboard? Theres so many of them!
+Simply said. Any arduino that has a USB controller on it. 
+Theoretically you can just go around and buy any arduino with the ATMEGA 32u4 Microprocessor on it, and it will work flawlessly with qmk!
+Personally i recommend the arduino pro Micro as Controller, since its cheap, and has enough cpu power and EEPROM space, to run qmk.
+
+If for some reason you cant get a pro micro (which is rare), there are loads of boards with other MCUs that will work.
+Generally you can also run any Controller that has a usb interface.
+Theres AVR controllers running LUFA as the usb firmware:
+	-ATMEGA 16u2
+	-ATMEGA 16u4 (often found in pro micro / sparkfun feather)
+	-AT90USB64   (often in teensys)
+
+Theres ARM CPUs with a usb chipset:
+	-STM32F0x2
+	-STM32F405 (yup thats the chip your flight controller runs on ;D)
+	-STM32H733
+	-And heaps more.
+
+And for the raspberry lovers:
+	-RP2040	   (the pi pico also supports usb!)
+
+When selecting your favourite Microcontroller, all you need to look out for, is that it has more than 16kb of EEPROM for QMK to be save on, a USB controller, and IMPORTANT: A minimum of IO pins of your ammount of rows + columns. 
+So lets say you want to build a split kb, that has a 6 x 5 matrix (we will get in to the details in a very short while) you will need a mikrocontroller for each half of the kb that has more than 11 digital pins.
+
+After having decided on your favoutite controller. Its time to buy all the components.
+
+Looking at the wiring diagram there isnt that much to buy!
+
+You will need:
+	-Your switches 
+	-An equal ammount of 1N418 diodes (1 for each switch) (if you buy other diodes, make sure its fast firing diodes)
+	-One microcontroller for every KB half (Or a single one if you build a normie board ;))
+	-Wires (i reccommend 30AWG wire wrapping wire, its super nice and easy to strip and already has isolation on it)
+	-2 TRRS Jacks (Only for split keyboards.)
+	-A case or a 3d printer (Tutorial of designing a 3d printed case in Section 4 :3)
+	-Basic soldering equiptment (soldering iron, flux, solder wire)
+
+An example configuration would be:
+A 6x4  keyboard, with 3 thumb keys -> 42 Keys 
+	-42 Choc switches
+	-42 Diodes
+	-2 Arduino pro micros
+	-2 TRRS jacks
+	-Wire
+
+
+SECTION 3:
+Now that you have all components are odered, lets get into the design, while we wait for them to arrive.
+
+Designing an ergonomic keyboard from scratch might sound very intimidating, but theres loads of tools to aid you!
+
+You can either jump straight into cad and let your creativity roam free, but i do not recommend that for beginners.
+
+If its your first time building an ergo board, theres an AMAZING tool called ERGOPAD.
+
+You should open the above link on your phone, or even better tablet.
+
+Ergopad allows you to just place your hand on the screen in a comfy position and start tapping around.
+
+Do this for your writing hand only (for me the right one)
+
+Use your left hand to select the finger that is currently tapping (make sure your wrist does not move during this entire process)
+
+Then start tapping up and down one finger at a time. You will see a layout being generated realtime!
+
+Make sure you only tap your fingers in locations that are comfortable!
+
+After doing roughly 15 taps with each finger, you can click export at the top, and you will get your fully custom keymap!
+But wait thats just a long string of text... 
+
+Time for another epic website to turn that text into an image that we can throw into cad.
+
+Well use a website called ergogen, to turn the config we just created into an svg. 
+If you are a coding enthusiast or prefer coding svg's manually (psychopath) then you can also just make your keymap here from scratch.
+
+The website allows us to use a scripting language, to generate the footprint position for our keyboard, which we will use in fusion to make the 3d model.
+
+I recommend importing the keymap and exporting the svg image that the website generates right away if you are not comfortable with scripting.
+Since ergopad already generated the "perfect" switch layout for you anyway, changes shouldnt be needed.
+
+Simply click on download zip at the right, after pasting your config, and extract the downloaded zip.
+The svg file we are interested in, will be located in /Downloads/ergogen/points/demo.svg
+
+Now that we have the svg, its time for CAD!
+
+SECTION 4: 
+Who doesnt love some good old engineering.
+
+We shall head into fusion, and start turning this boring svg image into a swag 3d model of our keyboard case, and if we are really deep into the keyboard iceberg, we can even make a pcb for our case in KICAD lateron.
+
+After launching fusion we firstly want to import the svg into our work area, so that we can use it to model our KB.
+In the Design workbench, head to the solid tab, and click on insert svg on the right, then upload the demo svg of your board.
+
+[tj image_fusion_insert_svg.png]
+
+This will insert the svg into the workbench and since fusion is a great tool for CAD, auto convert the black and white svg into a sketch that we can model with.
+Dont exit the sketch yet tho! We need to model the top face of the keyboard now. This is objectively the hardest step for us creative lacking engineers, so take your time ;D
+
+Since the svg only includes the "holes" for the switches we want to put into the keyboard, we need to model the outer borders, so that the "hole" svg can be turned into a top face, that we can extrude.
+Personally, i like using the spline tool in fusion, to create a smooth outline for the board. But feel free to go nuts on your keyboard design, with CAD, there are no limits :3
+
+[tj image_fusion_model_outer_perimeter.png]
+
+We now have the top plate of the keyboard, and in theory, we could just use the  extrude tool, extrude it 5mm and send it off to our 3d printer.
+While plopping switches in and soldering everything togehter, we still have a little problem that we can  solve with some more modeling: where do the actual electronics go?
+
+There are 2 roads to go down now. Either we model cutouts and places for the arduino / TRRS jack to go in, or we model with a pcb in mind.
+Since this is a beginner guide, and i want you to actually understand how the keyboards work, we are going with a pcb-less handwired board. So lets get back to modeling.
+
+For every component that you want to have in your keyboard, (Arduino, TRRs Jack, Bluetooth modules, Batteries...) you will either need to measure them yourself with calipers, or loop up their datasheet / Dimensions online.
+
+[tj image_arduino_datasheet]
+
+After we know the dimensions, we can create a second sketch, and using the footprint of the component, create "cutouts" that allow glueing or even screwing (more advanced) the component down.
+
+
+TBD
+
+Simply extrude the sketch, creating holes where the switches will go. 
+
