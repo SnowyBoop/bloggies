@@ -246,5 +246,81 @@ Heres how our finished top plate sketch should look:
 
 [tj image_finish_top_plate.png]
 
+Now its extrusion time! We extrude different parts of the plate for different lengths. So keep the sketch always visible with the eye icon next to the sketch.
 
+Firstly, we extrude the entire top plate, apart from key holes and screw holes for 2mm or 3mm, depending on how flat you like your board. I prefer mine to be as flat as possible so ill go with 2mm.
+
+[tj image_first_extrude.png]
+
+Then we will extrude the outer wall. The depth depends on how much space for wires we want and what type of switches we want to use.
+Choc switches are more shallow and dont need as much space inside the board, Cherry style are a bit more chonky
+To save you time measureing:
+   -Cherry: 10mm extrusion
+   -Choc: 6mm extrusion
+I will go with Chocs. So 6mm it is:
+
+[tj image_wall_extrude.png]
+
+Remember how we created the standoff circles? we will use these in a minute,  for now dont extrude them!
+
+Now we already have something that somewhat resembles a keyboard! yay. Lets get on working on the other plates.
+
+The middle plate is easy. It will sit inside the other 2 and will only be used to route cables, hold led's and hold out arduino.
+To model it, create a new sketch on the bottom of the top plate wall, and create yet another offset spline on the inside, to allow for clearance.
+Now the screw holes come into play, you will want to clone every screwhole and every 4mm spacer circle.
+Depending on what hardware you want, now your keyboard might diverge a bit from my design.
+If you want led's you need to make mounting holes for them, i will skip this, since rgb is for cringe people :3
+We will simply create connections in between the mounting holes, and then copy our arduino and trrs jack footprint, copying the dimensions 1-1 from their datasheet, to glue it in.
+Make sure that you leave enough room to route wires, and to NOT interfear with the switches!
+We will also model the wire channels, directly on the same plane. This will make extruding them shallower easy.
+Depending on how you choose to layout the components, and the shape of your board, your inner plate might look VERY different to mine.
+Heres how your inner plate might look. I labeled all the important features:
+
+[tj inner_plate_done.png]
+
+Now to extruding. we want the inner plate to rest inside the top plate, so we will use negative extrude values, to make it extrude "upwards" into the case.
+If your extrude tool turns red and switches to cut, you messed something up, make sure your inner plate does not intersect with the top one!
+We firstly extrude all the load carrying bits (so not the components, or wire channels) for 3mm
+and afterwards the footprints of our components. Depending on the component thickness, we can choose to glue the component onto the mid plate, or have it glued into the plate (basically not extrude at all, leaving a cutout)
+
+[tj image_cutout_vs_onto.png]
+
+When we extrude wire channels, we only extrude 1mm, same for the arduino in my case. I want it to glue down onto the mid plate.
+Lastly, the standoffs, extrude them as far as they need to be extruded, to barely touch the top plate, without actually touching it. We wouldnt want fusion to join the 2 components together. Using the mouse and the extrusion arrow makes
+this fast. Just dont enter a value.
+
+Heres how it should look:
+
+[tj image_mid_plate_done.png]
+
+Almost done now! 
+Off to the bottom plate. This one will be the easiest.
+Once again, create a new Component, and place the sketch on the bottom of the kb side wall. This time we will not create an offset spline, but we simply mirror the screw hole location. BUT! We will not use 2mm hole diameter, but 3mm, since thats the diameter of my
+heat melt inserts. Make sure you measure your inserts! They might differ in diameter from mine.
+Alternatively you can create a 1.5mm hole, and make the screws tap into the plastic. But if you have 5$ to spare, melt inserts are FAR superior, when you plan on upgrading things on the board every now and then.
+
+We dont need to copy the outer standoff circles, since we obviously dont want random standoffs, sticking out the bottom of the KB :3
+
+Now we extrude once again (Notice a pattern in fusion? >.<)
+This time a positive extrusion value, since we want the bottom plate to be beneath the outer wall.
+
+This is how a crossection should look after extruding:
+
+[tj image_cross_done.png]
+
+Notice a problem? the keyboard is entirely closed on all sides, we aint getting any data out of that thing...
+The last thing we need to do, is to create holes for cables to pass through.
+
+Select the top plate as the active component.
+We can do this by creating a sketch, where the connectors of the arduino/trrs would be(create the sketch on the middle plate),
+and just extruding them out. Fusion will automatically switch to cutting mode, since we are intersecting with the top plate 
+
+[tj image_connector_cutout.png]
+
+Now we are done! If you want you can add little things like text or patterns, to the keyboard or clean everything up with chamfers or fillets, but this is left up to you, depending on how you want the board to look
+Heres mine, after some cleanup:
+
+[tj image_mitchel_kb_done.png]
+
+Now its all up to you, to print the parts out in your favourite material / Color and we can go straight to wiring! :3
 
