@@ -48,14 +48,14 @@ Its all due to the magic of multiplexing!
 
 Instead of connecting every single button with a pulldown resistor to the aruino individually (which you could do for lets say a macro pad with 5 keys), we wire all our keys in a matrix.
 
-{multiplex image}
+[tj image_multiplex.png]
 
 In the above wiring diagram i have left out everything apart from the switches, diodes and wires. These 3 components do pretty much all the magic.
 As you can see in the above matrix, all the rows and all the columns of the keyboard are wired together in a line. What this allows, is for the arduino to "probe" every single key, one after another.
 To understand how this works. Imagine the arduino sends some voltage into the wire A1, and then listens on all of the B wires, if theres voltage. This will ofcoarse only be the case, if a switch is pressed on the B row. This closing of the circuit is detected
 by the arduino, and can be handeled by the code running (in our case QMK).
 
-{image-1-key-matrix}
+[tj image_1_key_matrix.png]
 
 This scanning is called matrix scanning, and is repeated over and over. Looping over all the columns, and listening for circuits closing on the rows. 
 
@@ -66,7 +66,7 @@ Thats a valid question! Diodes arent actually needed. Until you want to press mo
 To get the so called n-key rollover, we need the diodes to prevent voltage from going, where we dont want it.
 If we use the same matrix from above, lets now press 3 keys at the same time (insane).
 
-{image-3-key-matrix}
+[tj image_3_key_matrix.png]
 
 As you can see above, something interesting happens. 
 When we press 3 keys in an L shape, the voltage shorts out, from one row to another. This looks to our arduino as if 4 keys are pressed. Since voltage ofcourse doesnt just move in one direction when theres an intersection :P
@@ -78,7 +78,7 @@ SECTION 2:
 Now that we know the scanning theory, there is very little further electronic knowledge that is required to understand the inner workings of the Keyboard. 
 We can now look at a wiring diagram that has ALL components.
 
-{image-full-KB-half}
+[tj image_full_kb_half.png]
 
 As you can see, there is very little difference to our KB matrix. This is simply because there arent many more components. Basically everything is handeled by the Arduino.
 Talking arduino... 
@@ -197,8 +197,54 @@ For every component that you want to have in your keyboard, (Arduino, TRRs Jack,
 
 After we know the dimensions, we can create a second sketch, and using the footprint of the component, create "cutouts" that allow glueing or even screwing (more advanced) the component down.
 
+As for how we design the plates and the mounting of components, there are a few design desicions we can take:
 
-TBD
+Plateless:
+	-The simplest form of keyboard:
+	     -Cheap to make
+	     -not much versatility
+	     -doesnt look as good
+	     -hard to work on (cable routing / replacing parts)
 
-Simply extrude the sketch, creating holes where the switches will go. 
+[tj image_fishwave_kb.png]
+
+Plate:
+	-The best form for building / maintenance, consists of 3 Plates
+	     -More expensive, since more parts are needed
+	     -Harder to design
+	     -Way nicer to build in
+	     -Looks the best (if designed well)
+
+[tj image_mitchel_kb.png]
+
+Hybrid:
+	-A hybrid consisting of 2 plates. a Top plate and a bottom one
+	   -Middle ground of cost
+	   -Farely easy to design
+	   -Still looks good
+	   -Does add complexity and cost (heat melt inserts etc)
+
+[tj image_flatsticks_kb.png]
+
+I will go with the most complex, a 3 plate design, since after reading how to create a 3 plate keyboard, you will be able to make every other form too.
+
+Lets get back to fusion. What we now have is a sketch with key holes, and an outer border. Before extruding this top plate, we can already do some preperations for the other plates.
+Firstly create a spline offset by using the offset curve tool. We move this offset 2mm or 3mm inwards. This is going to be our keyboard side wall of either the top or middle plate.
+
+[tj image_spline_offset.png]
+
+Then comes a very important addition. Screw holes. We model them now, since doing that later is going to be AIDS.
+I recommend going with 6 screwholes. 4 on the actual corners of the kb, and 2 spread on the middle of the keyboard, to prevent the top plate from flexing down when we press the keys.
+The board is 3d printed at the end of the day. Adding 2 screws to the middle will provide a backbone for the top plate to rest on.
+For our design, i will go with m2 screws. They are tiny enough to fit in between the keys, and they are readily available and cheap, since they come for little money in "laptop repair kits"
+So we will run with a hole diameter of 2mm for the screw to go through.
+Around every screwhole, we will add 3d printed spacers. So create a 4mm circle around every 2mm circle for the screws. You will see why this is important in a second.
+
+[tj image_screwholes.png]
+
+Heres how our finished top plate sketch should look:
+
+[tj image_finish_top_plate.png]
+
+
 
