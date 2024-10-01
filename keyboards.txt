@@ -322,5 +322,25 @@ Heres mine, after some cleanup:
 
 [tj image_mitchel_kb_done.png]
 
-Now its all up to you, to print the parts out in your favourite material / Color and we can go straight to wiring! :3
+Now its all up to you, to print the parts out in your favourite material / Color and we can go straight to soldering! :3
 
+SECTION 5:
+Soldering. If you have never done it, this is a great project to learn soldering. Although who the hell has a 3d printer, but never soldered before xd
+Anyway, remember the key matrix diagram we looked at earlier? We now make that become reality.
+
+Many guides on this tell you to get enamel wire, and scrape the enamel off at the parts that touch the keys, or to just grab normal wire, and unisolate the ends.
+I did that once and spent an entire day just soldering... Dont do that LOL
+I have "developed" a better way to more quickly solder the board, that doesnt compromize on anything and just saves you time.
+
+Simply use 30AWG unisolated wire instead of cable. You can directly solder to it, and after soldering all rows, we put kepton tape over the exposed traces, to prevent shorts.
+Its fast, easy, and has not failed me in the past 5 years.
+
+Lets not rush ahead tho.
+
+To begin, preheat your soldering iron, and plop all switches into the 3d printed top plate.
+When they are installed, we will tin the legs of the switches, to make soldering wires to them easier, and prevent overheating the switches.
+Simply take a SMALL ammount of solder, and make sure it flows on the legs well.
+
+I can recommend 280C on the soldering iron, and lead free, rosin core 1mm diameter solder wire for this.
+
+[tj image_top_half_switches.png]
